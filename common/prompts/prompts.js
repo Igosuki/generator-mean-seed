@@ -32,7 +32,7 @@ Copy over and extend defaults for prompts
 */
 Prompts.prototype.formProps =function(prompts, props, skipKeys, toInt, params) {
 	var newProps ={};
-	
+
 	var ii, jj, kk, skip, curName;
 	for(ii =0; ii<prompts.length; ii++) {
 		curName =prompts[ii].name;
@@ -49,19 +49,23 @@ Prompts.prototype.formProps =function(prompts, props, skipKeys, toInt, params) {
 				console.log('setting default for property: '+curName+': '+prompts[ii].default);
 				props[curName] =prompts[ii].default;
 			}
-			
+
 			//convert to integer (from string) if necessary
 			for(kk =0; kk<toInt.length; kk++) {
 				if(curName ==toInt[kk]) {
 					props[curName] =parseInt(props[curName], 10);
 				}
 			}
-			
+
 			newProps[curName] =props[curName];
 		}
 	}
-	
+
 	return newProps;
 };
+
+Prompts.prototype.core = function () {
+	return require('./core.json');
+}
 
 module.exports = new Prompts({});

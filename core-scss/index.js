@@ -41,166 +41,24 @@ util.inherits(CoreScssGenerator, yeoman.generators.NamedBase);
 CoreScssGenerator.prototype.askFor = function askFor() {
 if(this.optSubGenerators.indexOf('core-scss') >-1) {
 
-	//need to define prompts either way for extending defaults
-	var prompts = [
-		{
-			name: 'optAppName',
-			message: 'Application name',
-			default: 'myproject'
-		},
-		{
-			name: 'optAppTitle',
-			message: 'Application title',
-			default: 'My Project'
-		},
-		{
-			name: 'optAppDescription',
-			message: 'Application description',
-			default: 'My really cool app!'
-		},
-		{
-			name: 'optAppKeywords',
-			message: 'Application (NPM/Bower) keywords, space separated',
-			default: 'mean-seed javascript angular node myproject app'
-		},
-		{
-			name: 'optGithubName',
-			message: 'Github User or Organization Name'
-		},
-		{
-			name: 'optAuthorName',
-			message: 'Author name and email (i.e. John Smith <johnsmith@email.com>)'
-		},
-		//should not be a prompt, just force set the value
-		// {
-			// name: 'optCssPreprocessor',
-			// message: 'CSS Pre-processor',
-			// choices: [
-				// 'less',
-				// 'scss'
-			// ],
-			// default: 'scss'
-		// },
-		{
-			type: 'list',
-			name: 'optOperatingSystem',
-			message: 'Operating system',
-			choices: [
-				'mac',
-				'linux',
-				'windows'
-			],
-			default: 'mac'
-		},
-		{
-			name: 'optServerPort',
-			message: 'What port to run the application on?',
-			default: 3000
-		},
-		{
-			name: 'optServerHttpPort',
-			message: 'What port to run the http application on (only applies if using https)?',
-			default: 3002
-		},
-		{
-			name: 'optSocketPort',
-			message: 'What port to run any socket connections on?',
-			default: 3001
-		},
-		{
-			name: 'optTestServerPort',
-			message: 'What port to run the TESTS on?',
-			default: 3005
-		},
-		{
-			name: 'optTestServerHttpPort',
-			message: 'What port to run the http app TESTS on?',
-			default: 3007
-		},
-		{
-			name: 'optTestSocketPort',
-			message: 'What port to run any socket connections for TESTS on?',
-			default: 3006
-		},
-		{
-			name: 'optTestDatabase',
-			message: 'What (MongoDB) database to use for the TESTS?',
-			default: 'test_temp'
-		},
-		{
-			type: 'list',
-			name: 'optNpmInstall',
-			message: 'Run npm install (if skipped, you will have to run yourself after Yeoman completes)?',
-			choices: [
-				'0',
-				'1'
-			],
-			default: '1'
-		},
-		{
-			type: 'list',
-			name: 'optBowerInstall',
-			message: 'Run bower install (if skipped, you will have to run yourself after Yeoman completes)?',
-			choices: [
-				'0',
-				'1'
-			],
-			default: '1'
-		},
-		{
-			type: 'list',
-			name: 'optSeleniumInstall',
-			message: 'Run selenium (for protractor tests) install (if skipped, you will have to run yourself after Yeoman completes)? NOTE: this may not work on Windows so you may have to install yourself anyway - see the README for more info.',
-			choices: [
-				'0',
-				'1'
-			],
-			default: '1'
-		},
-		{
-			type: 'list',
-			name: 'optGruntQ',
-			message: 'Run Grunt (if skipped, you will have to run yourself after Yeoman completes)?',
-			choices: [
-				'0',
-				'1'
-			],
-			default: '1'
-		},
-		{
-			name: 'optGitBranch',
-			message: 'What git branch to use?',
-			default: 'master'
-		}/*,
-		{
-			type: 'list',
-			name: 'optUseGitSeparateBranch',
-			message: 'Use a separate yo-[core-name] branch for the generator (i.e. to get updates - you will have to manually diff/merge them to your working/master branch)?',
-			choices: [
-				'0',
-				'1'
-			],
-			default: '0'
-		}
-		*/
-	];
-	
+	var prompts = PromptsMod.core();
+
 	var skipKeys =['optAppKeywords'];
 	var toInt =['optNpmInstall', 'optBowerInstall', 'optSeleniumInstall', 'optGruntQ', 'optUseGitSeparateBranch'];
 
 	if(!this.optConfigFile) {		//only prompt if don't have config file
 		var cb = this.async();
-		
+
 		this.prompt(prompts, function (props) {
 			var newProps =PromptsMod.formProps(prompts, props, skipKeys, toInt, {});
 			var xx;
 			for(xx in newProps) {
 				this.options.props[xx] =this[xx] =newProps[xx];
 			}
-			
+
 			//handle some special ones (the skipKeys from above)
 			this.options.props.optAppKeywords =this.optAppKeywords = props.optAppKeywords.split(' ');
-			
+
 			this.options.props.optCssPreprocessor =this.optCssPreprocessor ='scss';
 
 			cb();
@@ -213,7 +71,7 @@ if(this.optSubGenerators.indexOf('core-scss') >-1) {
 		for(xx in newProps) {
 			this.options.props[xx] =this[xx] =newProps[xx];
 		}
-		
+
 		//have to set this either way
 		this.options.props.optCssPreprocessor =this.optCssPreprocessor ='scss';
 	}

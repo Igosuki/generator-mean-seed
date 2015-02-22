@@ -16,7 +16,6 @@ var fs = require('fs');
 
 var pkgJson =require('../package.json');
 
-
 var MeanSeedGenerator = module.exports = function MeanSeedGenerator(args, options, config) {
 	yeoman.generators.Base.apply(this, arguments);
 
@@ -24,104 +23,35 @@ var MeanSeedGenerator = module.exports = function MeanSeedGenerator(args, option
 	hooks to call sub generators - ORDER MATTERS! They'll be called in the order they are listed
 	@toc 1.
 	*/
-	
-	this.hookFor('mean-seed:core-default', {
-		args: ['name'],		//apparently this is required - get an error if don't have it - even though we don't use or need it..
-		options: {
-			options: this.options
-		}
-	});
-	
-	this.hookFor('mean-seed:core-scss', {
-		args: ['name'],		//apparently this is required - get an error if don't have it - even though we don't use or need it..
-		options: {
-			options: this.options
-		}
-	});
-	
+
+	var hookFor = function(hookName) {
+		this.hookFor(hookName, {
+			args: ['name'],		//apparently this is required - get an error if don't have it - even though we don't use or need it..
+			options: {
+				options: this.options
+			}
+		});
+	}
+	hookFor.apply(this, 'mean-seed:core-default');
+	hookFor.apply(this, 'mean-seed:core-scss');
 	//order matters - this must be right after core generators first call (BEFORE add/write actual files)
-	this.hookFor('mean-seed:helper-core-commands-init', {
-		args: ['name'],		//apparently this is required - get an error if don't have it - even though we don't use or need it..
-		options: {
-			options: this.options
-		}
-	});
-	
-	this.hookFor('mean-seed:core-default-node', {
-		args: ['name'],		//apparently this is required - get an error if don't have it - even though we don't use or need it..
-		options: {
-			options: this.options
-		}
-	});
-	
-	this.hookFor('mean-seed:core-default-angular', {
-		args: ['name'],		//apparently this is required - get an error if don't have it - even though we don't use or need it..
-		options: {
-			options: this.options
-		}
-	});
-	
-	this.hookFor('mean-seed:core-scss-angular', {
-		args: ['name'],		//apparently this is required - get an error if don't have it - even though we don't use or need it..
-		options: {
-			options: this.options
-		}
-	});
-	
-	this.hookFor('mean-seed:ng-route', {
-		args: ['name'],		//apparently this is required - get an error if don't have it - even though we don't use or need it..
-		options: {
-			options: this.options
-		}
-	});
-	
-	this.hookFor('mean-seed:ng-directive', {
-		args: ['name'],		//apparently this is required - get an error if don't have it - even though we don't use or need it..
-		options: {
-			options: this.options
-		}
-	});
-	
-	this.hookFor('mean-seed:ng-service', {
-		args: ['name'],		//apparently this is required - get an error if don't have it - even though we don't use or need it..
-		options: {
-			options: this.options
-		}
-	});
-	
-	this.hookFor('mean-seed:node-controller', {
-		args: ['name'],		//apparently this is required - get an error if don't have it - even though we don't use or need it..
-		options: {
-			options: this.options
-		}
-	});
-	
-	this.hookFor('mean-seed:helper-core-merge', {
-		args: ['name'],		//apparently this is required - get an error if don't have it - even though we don't use or need it..
-		options: {
-			options: this.options
-		}
-	});
-	
+	hookFor.apply(this, 'mean-seed:helper-core-commands-init');
+	hookFor.apply(this, 'mean-seed:core-default-node');
+	hookFor.apply(this, 'mean-seed:core-default-angular');
+	hookFor.apply(this, 'mean-seed:core-scss-angular');
+	hookFor.apply(this, 'mean-seed:ng-route');
+	hookFor.apply(this, 'mean-seed:ng-directive');
+	hookFor.apply(this, 'mean-seed:ng-service');
+	hookFor.apply(this, 'mean-seed:node-controller');
+	hookFor.apply(this, 'mean-seed:helper-core-merge');
 	//NOTE: order matters - call this toward end / LAST!
-	this.hookFor('mean-seed:helper-commands', {
-		args: ['name'],		//apparently this is required - get an error if don't have it - even though we don't use or need it..
-		options: {
-			options: this.options
-		}
-	});
-	
+	hookFor.apply(this, 'mean-seed:helper-commands');
 	//NOTE: order matters - call this toward end / LAST!
-	this.hookFor('mean-seed:helper-log-next-steps', {
-		args: ['name'],		//apparently this is required - get an error if don't have it - even though we don't use or need it..
-		options: {
-			options: this.options
-		}
-	});
-	
+	hookFor.apply(this, 'mean-seed:helper-log-next-steps');
+
 	this.on('end', function () {
 		// this.installDependencies({ skipInstall: options['skip-install'] });
-		
+
 		// this.log.writeln('Next steps:\n1. run `npm install && bower install`\n2. write your code then run `grunt`\n3. creat github repo\n4. commit & push `gh-pages` branch\n5. commit, tag, & push `master` branch\n6. (optional) register bower component');
 	});
 
@@ -159,52 +89,52 @@ MeanSeedGenerator.prototype.askFor = function askFor() {
 
 	this.prompt(prompts, function (props) {
 		this.options.props ={};
-		
+
 		//use an array for subGenerators in case want to use more than one (i.e. for modularizing to multiple subgenerators)
 		var generators =[props.optSubGenerator];
 		var moreGenerators =false;
 		var logNextStepsMsg =false;
-		
-		if(props.optSubGenerator =='core-default') {
-			logNextStepsMsg ='Next steps:\n1. IF on Windows or you skipped the auto install, run `./node_modules/protractor/bin/webdriver-manager update`\n2. IF skipped any of the auto installs, run the install/build scripts - npm, bower, grunt (or re-run these if got any errors, i.e. `bower update && bower install` and/or `npm cache clean && npm install`)\n3. Run `node run.js`\n4. Open a browser to `http://localhost:3000` to view the app!\nSee the README.md file for more info.';
-			moreGenerators =['helper-core-commands-init', 'core-default-node', 'core-default-angular', 'helper-core-merge', 'helper-commands', 'helper-log-next-steps'];
+		switch(props.optSubGenerator) {
+			case 'core-default': {
+				logNextStepsMsg ='Next steps:\n1. IF on Windows or you skipped the auto install, run `./node_modules/protractor/bin/webdriver-manager update`\n2. IF skipped any of the auto installs, run the install/build scripts - npm, bower, grunt (or re-run these if got any errors, i.e. `bower update && bower install` and/or `npm cache clean && npm install`)\n3. Run `node run.js`\n4. Open a browser to `http://localhost:3000` to view the app!\nSee the README.md file for more info.';
+				moreGenerators =['helper-core-commands-init', 'core-default-node', 'core-default-angular', 'helper-core-merge', 'helper-commands', 'helper-log-next-steps'];
+			}
+			case 'core-scss': {
+				logNextStepsMsg ='Next steps:\n1. IF on Windows or you skipped the auto install, run `./node_modules/protractor/bin/webdriver-manager update`\n2. IF skipped any of the auto installs, run the install/build scripts - npm, bower, grunt (or re-run these if got any errors, i.e. `bower update && bower install` and/or `npm cache clean && npm install`)\n3. Run `node run.js`\n4. Open a browser to `http://localhost:3000` to view the app!\nSee the README.md file for more info.';
+				moreGenerators =['helper-core-commands-init', 'core-default-node', 'core-scss-angular', 'helper-core-merge', 'helper-commands', 'helper-log-next-steps'];
+			}
+			case 'ng-route': {
+				logNextStepsMsg ='Next steps:\n1. IF you want to make a custom nav (header and/or footer) for this page, add it in `modules/services/nav/nav-config.js`\n2. Edit the files (html, js, less/scss) for your new page!';
+				moreGenerators =['helper-commands', 'helper-log-next-steps'];
+			}
+			case 'ng-directive': {
+				logNextStepsMsg ='Next steps:\n1. Edit the files (js, less/scss) for your new directive!';
+				moreGenerators =['helper-commands', 'helper-log-next-steps'];
+			}
+			case 'ng-service': {
+				logNextStepsMsg ='Next steps:\n1. Edit the files (js) for your new service!';
+				moreGenerators =['helper-commands', 'helper-log-next-steps'];
+			}
+
+			case 'node-controller': {
+				logNextStepsMsg ='Next steps:\n1. update `app/db_schema.json` to fill in your fields/schema for your new collection\n2. Open your new files in `app/modules/controllers/[yourNewController]` to replace/update all the `TODO` comments appropriately and edit/add anything else to finish your new API controller!';
+				moreGenerators =['helper-log-next-steps'];
+			}
 		}
-		else if(props.optSubGenerator =='core-scss') {
-			logNextStepsMsg ='Next steps:\n1. IF on Windows or you skipped the auto install, run `./node_modules/protractor/bin/webdriver-manager update`\n2. IF skipped any of the auto installs, run the install/build scripts - npm, bower, grunt (or re-run these if got any errors, i.e. `bower update && bower install` and/or `npm cache clean && npm install`)\n3. Run `node run.js`\n4. Open a browser to `http://localhost:3000` to view the app!\nSee the README.md file for more info.';
-			moreGenerators =['helper-core-commands-init', 'core-default-node', 'core-scss-angular', 'helper-core-merge', 'helper-commands', 'helper-log-next-steps'];
-		}
-		else if(props.optSubGenerator =='ng-route') {
-			logNextStepsMsg ='Next steps:\n1. IF you want to make a custom nav (header and/or footer) for this page, add it in `modules/services/nav/nav-config.js`\n2. Edit the files (html, js, less/scss) for your new page!';
-			moreGenerators =['helper-commands', 'helper-log-next-steps'];
-		}
-		else if(props.optSubGenerator =='ng-directive') {
-			logNextStepsMsg ='Next steps:\n1. Edit the files (js, less/scss) for your new directive!';
-			moreGenerators =['helper-commands', 'helper-log-next-steps'];
-		}
-		else if(props.optSubGenerator =='ng-service') {
-			logNextStepsMsg ='Next steps:\n1. Edit the files (js) for your new service!';
-			moreGenerators =['helper-commands', 'helper-log-next-steps'];
-		}
-		
-		else if(props.optSubGenerator =='node-controller') {
-			logNextStepsMsg ='Next steps:\n1. update `app/db_schema.json` to fill in your fields/schema for your new collection\n2. Open your new files in `app/modules/controllers/[yourNewController]` to replace/update all the `TODO` comments appropriately and edit/add anything else to finish your new API controller!';
-			moreGenerators =['helper-log-next-steps'];
-		}
-		
 		if(moreGenerators) {
 			generators =generators.concat(moreGenerators);
 		}
-		
+
 		if(logNextStepsMsg) {
 			this.options.props.optLogNextStepsMsg =this.optLogNextStepsMsg = logNextStepsMsg;
 		}
-		
+
 		this.options.props.optSubGenerators =this.optSubGenerators = generators;
-		
+
 		cb();
 	}.bind(this));
 };
-	
+
 /**
 @toc 3.
 @method askForConfig
@@ -221,7 +151,7 @@ if(this.optSubGenerators.indexOf('core-default') >-1 || this.optSubGenerators.in
 			default: 'yo-configs/default.json'
 		}
 	];
-	
+
 	// console.log('dirname: '+__dirname);
 
 	this.prompt(prompts, function (props) {
@@ -236,7 +166,7 @@ if(this.optSubGenerators.indexOf('core-default') >-1 || this.optSubGenerators.in
 			}
 			else {
 				var config = JSON.parse(this.readFileAsString(configPath));
-				
+
 				var xx;
 				for(xx in config.prompts) {
 					this[xx] =config.prompts[xx];
@@ -245,7 +175,7 @@ if(this.optSubGenerators.indexOf('core-default') >-1 || this.optSubGenerators.in
 				}
 			}
 		}
-			
+
 		cb();
 	}.bind(this));
 }
@@ -259,7 +189,7 @@ Read and set 'optPkgJson' variable to package.json file (i.e. for setting versio
 MeanSeedGenerator.prototype.getPackageJson = function getPackageJson() {
 	// var pkgJson = JSON.parse(this.readFileAsString('package.json'));
 	//pkgJson require'd at top of file
-	
+
 	var key ='optPkgJson';
 	this.options.props[key] =this[key] =pkgJson;
 };
